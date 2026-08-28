@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CivicVision AI — Report Problems. Improve Your City.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo"><span class="mark">CV</span>CivicVision <span>AI</span></div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#report">Report Issue</a>
+      <a href="#dashboard">Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="hero grid-dark">
+    <div class="radar" aria-hidden="true"><div class="sweep"></div></div>
+    <div class="hero-content">
+      <p class="tag">AI-Powered Smart City</p>
+      <h1>Report Problems.<br><span>Improve Your City.</span></h1>
+      <p class="lede">CivicVision AI reads every citizen report, works out how urgent it is, and routes it straight to the department that can fix it — no forms lost in a queue.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="scrollToReport()">Report an Issue →</button>
+        <a href="#dashboard" class="btn-ghost">View City Dashboard</a>
+      </div>
+    </div>
+    <div class="pulse-strip">
+      <div class="pulse-item"><span class="num mono" id="pulseTotal">247</span><span class="lbl">Reports Filed</span></div>
+      <div class="pulse-item"><span class="num mono">4</span><span class="lbl">Departments Connected</span></div>
+      <div class="pulse-item"><span class="num mono">2.1h</span><span class="lbl">Avg. Routing Time</span></div>
+      <div class="pulse-item"><span class="num mono">92%</span><span class="lbl">Classification Accuracy</span></div>
+    </div>
+  </section>
+
+  <!-- REPORT SECTION -->
+  <section id="report" class="grid-paper">
+    <div class="section-title">
+      <p class="tag">Citizen Portal</p>
+      <h2>Report a Civic Issue</h2>
+      <p class="sub">Upload a photo and describe what's wrong — the analysis runs in seconds.</p>
+    </div>
+
+    <div class="report-card">
+      <div class="upload-box">
+        <div class="upload-icon">📷</div>
+        <h3>Upload Issue Image</h3>
+        <p>A clear photo helps route your report to the right team faster.</p>
+        <div class="file-drop" id="fileDrop">
+          <input type="file" id="issueImage" accept="image/*" onchange="previewImage(event)">
+          <span class="file-drop-label" id="fileDropLabel">Tap to choose a photo, or drop it here</span>
+        </div>
+        <div id="imagePreview"></div>
+      </div>
+
+      <div class="issue-details">
+        <label for="description">Describe the problem</label>
+        <textarea id="description" placeholder="Example: Large pothole near the main road, cars are swerving to avoid it..."></textarea>
+
+        <label for="location">Location</label>
+        <select id="location">
+          <option value="">Select location</option>
+          <option value="Anna Nagar">Anna Nagar</option>
+          <option value="T Nagar">T Nagar</option>
+          <option value="Egmore">Egmore</option>
+          <option value="Guindy">Guindy</option>
+        </select>
+        <div class="field-hint" id="formHint"></div>
+
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeIssue()">
+          <span id="analyzeBtnLabel">🤖 Analyze Issue</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI RESULT -->
+  <section id="result" class="result-section hidden">
+    <div class="section-title">
+      <p class="tag">AI Analysis</p>
+      <h2>Issue Analysis</h2>
+      <p class="sub">Here's how your report was classified and where it's headed.</p>
+    </div>
+
+    <div class="ticket" id="ticket">
+      <div class="ticket-head">
+        <span class="tlabel">Civic Report Ticket</span>
+        <span class="tnum" id="ticketNum">CV-000000</span>
+      </div>
+      <div class="ticket-body">
+        <div class="result-item"><span>Detected Issue</span><strong id="detectedIssue">—</strong></div>
+        <div class="result-item"><span>Severity</span><strong id="severity">—</strong></div>
+        <div class="result-item"><span>Priority</span><strong id="priority">—</strong></div>
+        <div class="result-item"><span>Department</span><strong id="department">—</strong></div>
+
+        <div class="explanation">
+          <h3>🧠 AI Explanation</h3>
+          <p id="explanation">—</p>
+        </div>
+        <div class="barcode" aria-hidden="true"></div>
+      </div>
+      <div class="ticket-foot">
+        <button onclick="submitComplaint()">Submit Complaint</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="dashboard-section grid-dark">
+    <div class="section-title">
+      <p class="tag">City Operations</p>
+      <h2>Authority Dashboard</h2>
+      <p class="sub">Live view of what's been reported and what needs attention first.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card"><h3 id="totalReports">247</h3><p>Total Reports</p></div>
+      <div class="stat-card critical"><h3 id="criticalCount">18</h3><p>Critical</p></div>
+      <div class="stat-card high"><h3 id="highCount">64</h3><p>High Priority</p></div>
+      <div class="stat-card medium"><h3 id="mediumCount">103</h3><p>Medium</p></div>
+    </div>
+
+    <div class="map-card">
+      <div class="map-card-head">
+        <h3>📍 Live Report Map</h3>
+        <div class="map-legend">
+          <span><i class="legend-dot p1"></i>Critical</span>
+          <span><i class="legend-dot p2"></i>High</span>
+          <span><i class="legend-dot p3"></i>Medium / Low</span>
+        </div>
+      </div>
+      <div id="reportMap" role="img" aria-label="Map of Chennai showing pinned civic issue reports"></div>
+    </div>
+
+    <div class="priority-list" id="priorityList">
+      <h3>🔥 Priority Issues</h3>
+      <div class="issue-row" data-score="94">
+        <span>🚧 Pothole — Anna Nagar</span>
+        <strong class="p1">P1</strong>
+        <div class="score-wrap"><div class="score-bar"><i style="width:94%"></i></div>94/100</div>
+      </div>
+      <div class="issue-row" data-score="91">
+        <span>💧 Drainage Overflow — Egmore</span>
+        <strong class="p1">P1</strong>
+        <div class="score-wrap"><div class="score-bar"><i style="width:91%"></i></div>91/100</div>
+      </div>
+      <div class="issue-row" data-score="87">
+        <span>🗑️ Garbage Overflow — Guindy</span>
+        <strong class="p2">P2</strong>
+        <div class="score-wrap"><div class="score-bar"><i style="width:87%"></i></div>87/100</div>
+      </div>
+      <div class="issue-row" data-score="76">
+        <span>💡 Broken Streetlight — T Nagar</span>
+        <strong class="p3">P3</strong>
+        <div class="score-wrap"><div class="score-bar"><i style="width:76%"></i></div>76/100</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 CivicVision AI · From Citizen Report to City Action</p>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="script.js" defer></script>
+</body>
+</html>
